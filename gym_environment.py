@@ -1,4 +1,5 @@
 from rocket_league_bot import InAirReward, SpeedTowardBallReward, VelocityBallToGoalReward
+from gym_renderer import RLViserRenderer
 
 def build_rlgym_v2_env():
     import numpy as np
@@ -55,8 +56,11 @@ def build_rlgym_v2_env():
         reward_fn=reward_fn,
         termination_cond=termination_condition,
         truncation_cond=truncation_condition,
-        transition_engine=RocketSimEngine()
+        transition_engine=RocketSimEngine(),
+        renderer=RLViserRenderer(),
     )
+    import rocketsimvis_rlgym_sim_client as rsv
+    type(rlgym_env).render = lambda self: rsv.send_state_to_rocketsimvis(self._prev_state)
 
     return RLGymV2GymWrapper(rlgym_env)
 
@@ -88,6 +92,7 @@ if __name__ == "__main__":
                       standardize_obs=False, # Don't touch these.
                       save_every_ts=1_000_000,  # save every 1M steps
                       timestep_limit=1_000_000_000,  # Train for 1B steps
-                      log_to_wandb=True # Set this to True if you want to use Weights & Biases for logging.
+                      log_to_wandb=True, # Set this to True if you want to use Weights & Biases for logging.
+                      render=True
                       ) 
     learner.learn()
