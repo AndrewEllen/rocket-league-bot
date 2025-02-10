@@ -1,5 +1,4 @@
 from rocket_league_bot import InAirReward, SpeedTowardBallReward, VelocityBallToGoalReward
-from gym_renderer import RLViserRenderer
 
 def build_rlgym_v2_env():
     import numpy as np
@@ -12,6 +11,7 @@ def build_rlgym_v2_env():
     from rlgym.rocket_league.state_mutators import MutatorSequence, FixedTeamSizeMutator, KickoffMutator
     from rlgym.rocket_league import common_values
     from rlgym_ppo.util import RLGymV2GymWrapper
+    from rlgym_tools.rocket_league.renderers.rocketsimvis_renderer import RocketSimVisRenderer
 
     spawn_opponents = True
     team_size = 1
@@ -57,10 +57,9 @@ def build_rlgym_v2_env():
         termination_cond=termination_condition,
         truncation_cond=truncation_condition,
         transition_engine=RocketSimEngine(),
-        renderer=RLViserRenderer(),
+        renderer=RocketSimVisRenderer(),
     )
-    import rocketsimvis_rlgym_sim_client as rsv
-    type(rlgym_env).render = lambda self: rsv.send_state_to_rocketsimvis(self._prev_state)
+    #rlgym_env.render()
 
     return RLGymV2GymWrapper(rlgym_env)
 
